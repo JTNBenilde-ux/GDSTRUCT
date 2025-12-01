@@ -1,106 +1,63 @@
+import java.util.Random;
+import java.util.Scanner;
+
 public class Main {
-    static class Node {
-        String data;
-        Node next;
 
-        Node(String data) {
-            this.data = data;
-        }
-    }
-
-    static class LinkedList {
-        private Node head;
-        private int size;
-
-        public LinkedList() {
-            head = null;
-            size = 0;
-        }
-
-        public void add(String value) {
-            Node newNode = new Node(value);
-
-            if (head == null) {
-                head = newNode;
-            } else {
-                Node current = head;
-                while (current.next != null) {
-                    current = current.next;
-                }
-                current.next = newNode;
-            }
-            size++;
-        }
-
-        public String removeFirst() {
-            if (head == null) return null;
-
-            String removed = head.data;
-            head = head.next;
-            size--;
-            return removed;
-        }
-
-        public int size() {
-            return size;
-        }
-
-        public boolean contains(String value) {
-            Node current = head;
-
-            while (current != null) {
-                if (current.data.equals(value)) return true;
-                current = current.next;
-            }
-
-            return false;
-        }
-
-        public int indexOf(String value) {
-            Node current = head;
-            int index = 0;
-
-            while (current != null) {
-                if (current.data.equals(value)) return index;
-                current = current.next;
-                index++;
-            }
-
-            return -1;
-        }
-
-        public String toString() {
-            StringBuilder sb = new StringBuilder("[");
-            Node current = head;
-
-            while (current != null) {
-                sb.append(current.data);
-                if (current.next != null) sb.append(", ");
-                current = current.next;
-            }
-            return sb.append("]").toString();
-        }
-    }
 
     public static void main(String[] args) {
 
-        LinkedList agents = new LinkedList();
+        PlayerStack playerStack = new PlayerStack();
+        Random rand = new Random();
+        Scanner scanner = new Scanner(System.in);
 
-        //Valorant characters
-        agents.add("Raze");
-        agents.add("Vys");
-        agents.add("Omen");
-        agents.add("Sova");
-        agents.add("Waylay");
+        // Valorant agent names
+        String[] valorantAgents = {
+                "Jett", "Raze", "Phoenix", "Neon", "Yoru",
+                "Reyna", "Chamber", "Killjoy", "Cypher", "Sova",
+                "Fade", "Skye", "Breach", "Viper", "Astra",
+                "Omen", "Brimstone", "Harbor", "Iso", "Clove",
+                "Gekko", "Sage", "Deadlock", "Kay/O"
+        };
 
-        System.out.println("Valorant Agents: " + agents);
-        System.out.println("Size: " + agents.size());
-        System.out.println("\nRemoved first: " + agents.removeFirst());
-        System.out.println("After removal: " + agents);
-        System.out.println("Size: " + agents.size());
-        System.out.println("\nContains Omen? " + agents.contains("Omen"));
-        System.out.println("Contains Jett? " + agents.contains("Jett"));
-        System.out.println("\nIndex of Sova: " + agents.indexOf("Sova"));
-        System.out.println("Index of Reyna: " + agents.indexOf("Reyna"));
-        System.out.println("Index of Phoenix: " + agents.indexOf("Phoenix")); // not present
-    }}
+        int gameCount = 0;
+
+        System.out.println("=== STACK-BASED MATCHMAKING (VALORANT AGENTS ONLY) ===");
+        System.out.println("Press ENTER to simulate each turn.");
+
+        while (gameCount < 10) {
+            scanner.nextLine(); // wait for ENTER
+
+            int newPlayers = rand.nextInt(7) + 1; // 1–7 players
+            System.out.println("\n--- NEW TURN ---");
+            System.out.println(newPlayers + " agents joined the stack.");
+
+
+            for (int i = 0; i < newPlayers; i++) {
+                String randomAgent = valorantAgents[rand.nextInt(valorantAgents.length)];
+                playerStack.push(randomAgent);
+            }
+
+            System.out.println("Agents in stack: " + playerStack.size());
+            System.out.println(playerStack.getStack());
+
+
+            if (playerStack.size() >= 5) {
+                System.out.println("\n>>> A GAME HAS STARTED");
+
+                System.out.print("Agents in this match: ");
+
+                for (int i = 0; i < 5; i++) {
+                    System.out.print(playerStack.pop() + " ");
+                }
+
+                System.out.println("\nGame Created Successfully!");
+                gameCount++;
+                System.out.println("Total Games Created: " + gameCount);
+            }
+
+            System.out.println("------------------------------");
+        }
+
+        System.out.println("\n=== MATCHMAKING COMPLETE: 10 GAMES MADE ===");
+    }
+}
