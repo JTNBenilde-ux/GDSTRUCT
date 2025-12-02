@@ -2,62 +2,74 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
-
-
     public static void main(String[] args) {
+        CardsStack deck = new CardsStack();
+        CardsStack hand = new CardsStack();
+        CardsStack discarded = new CardsStack();
 
-        PlayerStack playerStack = new PlayerStack();
         Random rand = new Random();
-        Scanner scanner = new Scanner(System.in);
+        Scanner input = new Scanner(System.in);
 
-        // Valorant agent names
-        String[] valorantAgents = {
-                "Jett", "Raze", "Phoenix", "Neon", "Yoru",
-                "Reyna", "Chamber", "Killjoy", "Cypher", "Sova",
-                "Fade", "Skye", "Breach", "Viper", "Astra",
-                "Omen", "Brimstone", "Harbor", "Iso", "Clove",
-                "Gekko", "Sage", "Deadlock", "Kay/O"
-        };
+        for (int i = 1; i <= 30; i++) {
+            deck.push(new Cards("Card " + ((i % 10) + 1)));
 
-        int gameCount = 0;
-
-        System.out.println("=== STACK-BASED MATCHMAKING (VALORANT AGENTS ONLY) ===");
-        System.out.println("Press ENTER to simulate each turn.");
-
-        while (gameCount < 10) {
-            scanner.nextLine(); // wait for ENTER
-
-            int newPlayers = rand.nextInt(7) + 1; // 1–7 players
-            System.out.println("\n--- NEW TURN ---");
-            System.out.println(newPlayers + " agents joined the stack.");
-
-
-            for (int i = 0; i < newPlayers; i++) {
-                String randomAgent = valorantAgents[rand.nextInt(valorantAgents.length)];
-                playerStack.push(randomAgent);
-            }
-
-            System.out.println("Agents in stack: " + playerStack.size());
-            System.out.println(playerStack.getStack());
-
-
-            if (playerStack.size() >= 5) {
-                System.out.println("\n>>> A GAME HAS STARTED");
-
-                System.out.print("Agents in this match: ");
-
-                for (int i = 0; i < 5; i++) {
-                    System.out.print(playerStack.pop() + " ");
-                }
-
-                System.out.println("\nGame Created Successfully!");
-                gameCount++;
-                System.out.println("Total Games Created: " + gameCount);
-            }
-
-            System.out.println("------------------------------");
         }
 
-        System.out.println("\n=== MATCHMAKING COMPLETE: 10 GAMES MADE ===");
+        System.out.println("=== CARD DECK GAME START ===\n");
+
+        int round = 1;
+
+        while (!deck.isEmpty()) {
+
+            System.out.println("----- ROUND " + round + " -----");
+            int command = rand.nextInt(3);
+            int count = rand.nextInt(5) + 1;
+
+            switch (command) {
+
+                case 0:
+                    System.out.println("Command: DRAW " + count + " cards");
+                    for (int i = 0; i < count; i++) {
+                        if (deck.isEmpty()) break;
+                        hand.push(deck.pop());
+                    }
+                    break;
+
+                case 1:
+                    System.out.println("Command: DISCARD " + count + " cards");
+                    for (int i = 0; i < count; i++) {
+                        Cards topCard = hand.pop();
+                        if (topCard != null) discarded.push(topCard);
+                        else break;
+                    }
+                    break;
+
+                case 2:
+                    System.out.println("Command: GET " + count + " cards from discarded pile");
+                    for (int i = 0; i < count; i++) {
+                        Cards topCard = discarded.pop();
+                        if (topCard != null) hand.push(topCard);
+                        else break;
+                    }
+                    break;
+            }
+
+            System.out.println("\nCards in Hand:");
+            hand.printCards();
+
+            System.out.println("\nRemaining Cards in Deck: " + deck.size());
+            System.out.println("Cards in Discard Pile: " + discarded.size());
+
+            System.out.println();
+            System.out.print("Press ENTER for next round...");
+            input.nextLine();
+
+            round++;
+            System.out.println();
+        }
+
+        System.out.println("=== GAME OVER ===");
+        System.out.println("The player deck is empty.");
     }
 }
+
